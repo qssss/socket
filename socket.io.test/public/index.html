@@ -12,10 +12,21 @@
     <script>
         // 模拟客户端不断的向服务端发送随机数 当随机数大于0.95的时候 服务端延迟一秒 
         // 向客户端发送警告 以及警告次数
-        const ws = 
+        const ws = io.connect('ws://localhost:8000');
         ws.on('connect',()=>{
-            
+            ws.on('event client',(data)=>{
+                console.log('warning count:' + data.count)
+                // console.log(data.message);
+            })
+            ws.on('disconnect',()=>{
+                console.log('连接已断开');
+                clearInterval(interval);
+            })
         })
+
+        let interval = setInterval(()=>{
+            ws.emit('event server',{message:Math.random()})
+        },2000)
     </script>
 </body>
 </html>
